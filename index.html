@@ -1,54 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Three.js Depth Map Example</title>
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textured Plane Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
-    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
     <script>
-        // Scene setup
+        // Set up the scene
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // OrbitControls for camera manipulation
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.z = 5;
-        controls.update();
-
-        // Loading textures
+        // Load the texture
         const textureLoader = new THREE.TextureLoader();
-        const depthMap = textureLoader.load('depthmap_000001.png');
         const texture = textureLoader.load('texture_000001.png');
 
-        // Plane geometry for the mesh
-        const geometry = new THREE.PlaneGeometry(5, 5, 256, 256);
+        // Create the material
+        const material = new THREE.MeshBasicMaterial({ map: texture });
 
-        // Material with the texture and depth map
-        const material = new THREE.MeshBasicMaterial({
-            map: texture,
-            displacementMap: depthMap,
-            displacementScale: 1,
-        });
+        // Create the plane geometry
+        const planeGeometry = new THREE.PlaneGeometry(1024, 1024); // Adjust the size as needed
+        const plane = new THREE.Mesh(planeGeometry, material);
+        plane.material.side = THREE.DoubleSide; // Show the texture on both sides
+        plane.position.set(0, 0, 0); // Adjust the position        
 
-        // Creating the mesh and adding it to the scene
-        const plane = new THREE.Mesh(geometry, material);
+        // Add the plane to the scene
         scene.add(plane);
 
-        // Animation loop
+        // Set up the camera position
+        camera.position.set(0, 0, 750);
+        camera.lookAt(scene.position); // Ensure the camera is looking at the center of the plane
+
+        // Render the scene
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Only required if controls.enableDamping = true, or if controls.autoRotate = true
             renderer.render(scene, camera);
         }
-
         animate();
     </script>
 </body>
