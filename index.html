@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Three.js Depth Map Example</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.130.1/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // OrbitControls for camera manipulation
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.z = 5;
+        controls.update();
+
+        // Loading textures
+        const textureLoader = new THREE.TextureLoader();
+        const depthMap = textureLoader.load('path_to_your_depth_map.png');
+        const texture = textureLoader.load('path_to_your_texture.png');
+
+        // Plane geometry for the mesh
+        const geometry = new THREE.PlaneGeometry(5, 5, 256, 256);
+
+        // Material with the texture and depth map
+        const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            displacementMap: depthMap,
+            displacementScale: 1,
+        });
+
+        // Creating the mesh and adding it to the scene
+        const plane = new THREE.Mesh(geometry, material);
+        scene.add(plane);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Only required if controls.enableDamping = true, or if controls.autoRotate = true
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
